@@ -1,0 +1,165 @@
+#!/usr/bin/env python
+
+from __future__ import unicode_literals, print_function
+import argparse
+import os
+import re
+import six
+import sys
+from subprocess import call
+from xunitmerge import merge_xunit
+
+
+COVERAGE_FILE = '.coverage{}'
+NOSETESTS_FILE = 'nosetests{}.xml'
+COVER_PACKAGE_RE = re.compile(r'--cover-package=(?P<packages>[a-z0-9_,]+)', re.IGNORECASE)
+
+
+parser = argparse.ArgumentParser(
+    description='Run nosetests multiple times and merge their '
+                'xml reports using xunitmerge. The advantage '
+                'of this plugin is that it guarantees that all '
+                'nosetests calls are executed even if any of them '
+                'fails. This is especially useful if multiple '
+                'nosetests need to be run in Makefile fail only '
+                'after all runs are executed and if any of the '
+                'runs failed.'
+)
+
+parser.add_argument(
+    'command',
+    action='store',
+    type=six.text_type,
+    nargs='+',
+    help='Nosetests command string which be executed in shell '
+         '(e.g. `nosetests -sv --with-coverage --with-xunit`). '
+         'Must contain a flag --with-xunit and can be '
+         'provided multiple times.')
+
+
+class NosetestsCall(object):
+    def __init__(self, command):
+        self.command = command
+        self.errors = []
+        self.return_code = None
+        self.coverage_data = None
+
+    def is_valid(self):
+        """
+        Return boolean if the provided nosetests command is valid
+        """
+        self.errors = []
+
+        if '--with-xunit' not in self.command:
+            self.errors.append('--with-xunit must be provided in `{}`'
+                               ''.format(self.command))
+
+        if '--xunit-file' in self.command:
+            self.errors.append('--xunit-file cannot be provided in `{}`'
+                               ''.format(self.command))
+
+        return not bool(self.errors)
+
+    def is_covered(self):
+        """
+        Return boolean if the nosetests is ran with coverage
+        """
+        return '--with-coverage' in self.command
+
+    @property
+    def coverage_file(self):
+        """
+        Return name of the coverage file where the coverage
+        returns will be stored.
+        """
+        return COVERAGE_FILE.format('.' + six.text_type(hash(self)))
+
+    def read_coverage(self):
+        """
+        Read the coverage data into attribute ``coverage_data``
+        """
+        with open(COVERAGE_FILE.format(''), 'rb') as fid:
+            self.coverage_data = fid.read()
+        os.unlink(COVERAGE_FILE.format(''))
+
+    def write_coverage(self):
+        """
+        Write coverage data to a file
+        """
+        with open(self.coverage_file, 'wb') as fid:
+            fid.write(self.coverage_data)
+
+    @property
+    def xunit_file(self):
+        return NOSETESTS_FILE.format(hash(self))
+
+    def get_final_command(self):
+        command = self.command + ' --xunit-file={}'.format(self.xunit_file)
+        return command
+
+    def __hash__(self):
+        return hash(self.command)
+
+    def __str__(self):
+        return self.command
+
+    def __call__(self):
+        command = self.get_final_command()
+
+        print('Executing: {}'.format(command))
+        self.return_code = call(command, shell=True)
+
+        if self.is_covered():
+            # coverage report has to be opened and removed
+            # because other coverage is smart enough to
+            # combine the coverage reports on the spot
+            # which can cause funny reports for
+            # non-first nosetests calls
+            self.read_coverage()
+
+        return self.return_code
+
+    @staticmethod
+    def merge_calls(nose_calls):
+        xunit_files = [i.xunit_file for i in nose_calls]
+        merge_xunit(xunit_files, NOSETESTS_FILE.format(''))
+        map(os.unlink, xunit_files)
+
+        if any((i.is_covered() for i in nose_calls)):
+            [i.write_coverage() for i in nose_calls]
+            call('coverage combine', shell=True)
+
+            cover_packages = []
+            for nose in nose_calls:
+                cover_packages += COVER_PACKAGE_RE.findall(nose.command)[0].split(',')
+            cover_packages = map(lambda i: '{}*'.format(i), list(set(cover_packages)))
+
+            coverage_command = [
+                'coverage',
+                'report',
+                '--include="{}"'.format(','.join(cover_packages)),
+            ]
+            call(' '.join(coverage_command), shell=True)
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+
+    nose_calls = [NosetestsCall(command) for command in args.command]
+
+    # if any of the calls have invalid commands
+    # print out errors
+    if any([not nose.is_valid() for nose in nose_calls]):
+        errors = []
+        for nose in nose_calls:
+            errors.extend(nose.errors)
+        errors = map(lambda error: '* ' + error, errors)
+        parser.error('\n\nErrors found in nosetests commands:\n{}'
+                     ''.format('\n'.join(errors)))
+
+    return_calls = [nose() for nose in nose_calls]
+
+    NosetestsCall.merge_calls(nose_calls)
+
+    any_failed = any((code != 0 for code in return_calls))
+    sys.exit(0 if not any_failed else 1)
