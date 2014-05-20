@@ -41,7 +41,8 @@ parser.add_argument(
 terminal = blessings.Terminal()
 
 
-def status_print(status, message):
+def status_print(status, message=None):
+    message = message or ''
     print('---')
     print(terminal.bold_yellow(status) + (message and ':' or ''),
           message)
