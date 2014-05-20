@@ -19,6 +19,7 @@ setup(
     packages=find_packages(exclude=['test', 'test.*']),
     scripts=['bin/multinosetests'],
     install_requires=[
+        'blessings',
         'six',
     ],
     keywords=' '.join([

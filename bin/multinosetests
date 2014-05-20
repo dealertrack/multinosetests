@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals, print_function
 import argparse
+import blessings
 import os
 import re
 import six
@@ -35,6 +36,16 @@ parser.add_argument(
          '(e.g. `nosetests -sv --with-coverage --with-xunit`). '
          'Must contain a flag --with-xunit and can be '
          'provided multiple times.')
+
+
+terminal = blessings.Terminal()
+
+
+def status_print(status, message):
+    print('---')
+    print(terminal.bold_yellow(status) + (message and ':' or ''),
+          message)
+    print()
 
 
 class NosetestsCall(object):
@@ -106,7 +117,7 @@ class NosetestsCall(object):
     def __call__(self):
         command = self.get_final_command()
 
-        print('Executing: {}'.format(command))
+        status_print('Running', command)
         self.return_code = call(command, shell=True)
 
         if self.is_covered():
@@ -158,6 +169,7 @@ if __name__ == '__main__':
                      ''.format('\n'.join(errors)))
 
     return_calls = [nose() for nose in nose_calls]
+    status_print('Finished running all nosetest suites')
 
     NosetestsCall.merge_calls(nose_calls)
 
