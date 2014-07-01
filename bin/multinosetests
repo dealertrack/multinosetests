@@ -132,7 +132,7 @@ class NosetestsCall(object):
         return self.return_code
 
     @staticmethod
-    def merge_calls(nose_calls):
+    def merge_calls(nose_calls, report_coverage):
         xunit_files = [i.xunit_file for i in nose_calls]
         merge_xunit(xunit_files, NOSETESTS_FILE.format(''))
         map(os.unlink, xunit_files)
@@ -146,12 +146,13 @@ class NosetestsCall(object):
                 cover_packages += COVER_PACKAGE_RE.findall(nose.command)[0].split(',')
             cover_packages = map(lambda i: '{}*'.format(i), list(set(cover_packages)))
 
-            coverage_command = [
-                'coverage',
-                'report',
-                '--include="{}"'.format(','.join(cover_packages)),
-            ]
-            call(' '.join(coverage_command), shell=True)
+            if report_coverage:
+                coverage_command = [
+                    'coverage',
+                    'report',
+                    '--include="{}"'.format(','.join(cover_packages)),
+                ]
+                call(' '.join(coverage_command), shell=True)
 
 
 if __name__ == '__main__':
@@ -170,9 +171,10 @@ if __name__ == '__main__':
                      ''.format('\n'.join(errors)))
 
     return_calls = [nose() for nose in nose_calls]
+    any_failed = any((code != 0 for code in return_calls))
+
     status_print('Finished running all nosetest suites')
 
-    NosetestsCall.merge_calls(nose_calls)
+    NosetestsCall.merge_calls(nose_calls, not any_failed)
 
-    any_failed = any((code != 0 for code in return_calls))
     sys.exit(0 if not any_failed else 1)
