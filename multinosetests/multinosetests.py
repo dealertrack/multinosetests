@@ -4,6 +4,7 @@ import blessings
 import os
 import re
 import six
+import sys
 from subprocess import call
 from xunitmerge import merge_xunit
 
@@ -52,10 +53,17 @@ def status_print(status, message=None):
         printed next to the status without any formatting.
     """
     message = message or ''
-    print('---')
-    print(terminal.bold_green(status) + (message and ':' or ''),
-          message)
-    print()
+    printout = ' '.join([
+        '\n'
+        '---\n'
+        '{status}{message}'
+        '\n\n'
+    ])
+    printout = printout.format(
+        status=terminal.bold_green(status),
+        message=': ' + message if message else '',
+    )
+    print(printout, file=sys.stderr)
 
 
 class NosetestsCall(object):
