@@ -268,11 +268,11 @@ class TestUtils(unittest.TestCase):
                 '',
                 'hello',
                 '',
-                terminal.red('is successful: False'),
-                '  total tests: 20',
-                '   successful: 8',
-                '     failures: 7',
-                '       errors: 5',
+                terminal.red('     result: FAILURE'),
+                'total tests: 20',
+                ' successful: 8',
+                '   failures: 7',
+                '     errors: 5',
             ])
         )
 
@@ -293,10 +293,10 @@ class TestUtils(unittest.TestCase):
             '\n'.join([
                 '',
                 '',
-                terminal.green('is successful: True'),
-                '  total tests: 20',
-                '   successful: 8',
-                '     failures: 7',
-                '       errors: 5',
+                terminal.green('     result: SUCCESS'),
+                'total tests: 20',
+                ' successful: 8',
+                '   failures: 7',
+                '     errors: 5',
             ])
         )

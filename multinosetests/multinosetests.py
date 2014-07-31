@@ -70,15 +70,17 @@ def status_print_report(name, report, call=None):
     _ = lambda x:x
     c = getattr(terminal, 'green' if report['is_successful'] else 'red')
 
+    success = 'SUCCESS' if report['is_successful'] else 'FAILURE'
+
     message = '\n'.join([
         '',
         '{command}',
-        c('is successful: {is_successful}'),
-        _('  total tests: {total}'),
-        _('   successful: {successful}'),
-        _('     failures: {failures}'),
-        _('       errors: {errors}'),
-    ]).format(command=command, **report)
+        c('     result: {success}'),
+        _('total tests: {total}'),
+        _(' successful: {successful}'),
+        _('   failures: {failures}'),
+        _('     errors: {errors}'),
+    ]).format(command=command, success=success, **report)
 
     status_print(name, message)
 
