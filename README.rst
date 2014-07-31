@@ -37,7 +37,7 @@ To run the tests you need to install testing requirements first::
 
     $ pip install -r requirements-dev.txt
 
-Then to run tests, you can use ``nosetests``:
+Then to run tests, you can use ``nosetests``::
 
     $ nosetests -sv
 
