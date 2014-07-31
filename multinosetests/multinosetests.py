@@ -16,7 +16,7 @@ COVER_PACKAGE_RE = re.compile(r'--cover-package=(?P<packages>[a-z0-9_,]+)', re.I
 terminal = blessings.Terminal()
 
 
-def status_print(status, message=None):
+def status_print(status, message=None, use_color=True):
     """
     Helper to print status messages with
     bold formatted status text
@@ -24,11 +24,14 @@ def status_print(status, message=None):
     Parameters
     ----------
     status : str
-        Status text. Is printed bold green.
+        Status text. Is printed bold.
     message : str, optional
         Optional additional message which will be
         printed next to the status without any formatting.
     """
+    formatting = lambda x:x
+    if use_color:
+        formatting = terminal.bold
     message = message or ''
     printout = (
         '\n'
@@ -37,7 +40,7 @@ def status_print(status, message=None):
         '\n\n'
     )
     printout = printout.format(
-        status=terminal.bold_green(status),
+        status=formatting(status),
         message=': ' + message if message else '',
     )
     print(printout, file=sys.stderr)
