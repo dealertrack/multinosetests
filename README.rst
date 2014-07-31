@@ -30,6 +30,17 @@ You can use the utility via an executable ``multinosetests``::
     $ multinosetests "nosetests tests/foo -sv --with-xunit --with-coverage" \
                      "nosetests tests/bar -sv --with-xunit --with-coverage"
 
+Testing
+-------
+
+To run the tests you need to install testing requirements first::
+
+    $ pip install -r requirements-dev.txt
+
+Then to run tests, you can use ``nosetests``:
+
+    $ nosetests -sv
+
 Credits
 -------
 
