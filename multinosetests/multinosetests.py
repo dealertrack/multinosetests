@@ -16,7 +16,7 @@ COVER_PACKAGE_RE = re.compile(r'--cover-package=(?P<packages>[a-z0-9_,]+)', re.I
 terminal = blessings.Terminal()
 
 
-def status_print(status, message=None, use_color=True):
+def status_print(status, message=None):
     """
     Helper to print status messages with
     bold formatted status text
@@ -29,9 +29,6 @@ def status_print(status, message=None, use_color=True):
         Optional additional message which will be
         printed next to the status without any formatting.
     """
-    formatting = lambda x:x
-    if use_color:
-        formatting = terminal.bold
     message = message or ''
     printout = (
         '\n'
@@ -40,7 +37,7 @@ def status_print(status, message=None, use_color=True):
         '\n\n'
     )
     printout = printout.format(
-        status=formatting(status),
+        status=terminal.bold_blue(status),
         message=': ' + message if message else '',
     )
     print(printout, file=sys.stderr)
@@ -69,14 +66,20 @@ def status_print_report(name, report, call=None):
     command = ''
     if call:
         command = call.get_final_command() + '\n'
-    message = (
-        '\n{command}\n'
-        'is successful: {is_successful}\n'
-        '  total tests: {total}\n'
-        '   successful: {successful}\n'
-        '     failures: {failures}\n'
-        '       errors: {errors}'
-    ).format(command=command, **report)
+
+    _ = lambda x:x
+    c = getattr(terminal, 'green' if report['is_successful'] else 'red')
+
+    message = '\n'.join([
+        '',
+        '{command}',
+        c('is successful: {is_successful}'),
+        _('  total tests: {total}'),
+        _('   successful: {successful}'),
+        _('     failures: {failures}'),
+        _('       errors: {errors}'),
+    ]).format(command=command, **report)
+
     status_print(name, message)
 
 

@@ -8,6 +8,7 @@ from multinosetests.multinosetests import (
     get_nose_xml_report,
     status_print,
     status_print_report,
+    terminal,
 )
 
 
@@ -194,11 +195,11 @@ class TestUtils(unittest.TestCase):
     def test_status_print_with_message(self,
                                        mock_terminal,
                                        mock_print):
-        mock_terminal.bold_green.side_effect = lambda x: x
+        mock_terminal.bold_blue.side_effect = lambda x: x
 
         status_print('foo', 'bar')
 
-        mock_terminal.bold_green.assert_called_once_with('foo')
+        mock_terminal.bold_blue.assert_called_once_with('foo')
         mock_print.assert_called_once_with(
             '\n---\nfoo: bar\n\n',
             file=sys.stderr
@@ -209,11 +210,11 @@ class TestUtils(unittest.TestCase):
     def test_status_print_without_message(self,
                                           mock_terminal,
                                           mock_print):
-        mock_terminal.bold_green.side_effect = lambda x: x
+        mock_terminal.bold_blue.side_effect = lambda x: x
 
         status_print('foo')
 
-        mock_terminal.bold_green.assert_called_once_with('foo')
+        mock_terminal.bold_blue.assert_called_once_with('foo')
         mock_print.assert_called_once_with(
             '\n---\nfoo\n\n',
             file=sys.stderr
@@ -256,7 +257,7 @@ class TestUtils(unittest.TestCase):
             'errors': 5,
             'failures': 7,
             'successful': 8,
-            'is_successful': True,
+            'is_successful': False,
         }
 
         status_print_report('Foo', report, mock_call)
@@ -267,7 +268,7 @@ class TestUtils(unittest.TestCase):
                 '',
                 'hello',
                 '',
-                'is successful: True',
+                terminal.red('is successful: False'),
                 '  total tests: 20',
                 '   successful: 8',
                 '     failures: 7',
@@ -292,7 +293,7 @@ class TestUtils(unittest.TestCase):
             '\n'.join([
                 '',
                 '',
-                'is successful: True',
+                terminal.green('is successful: True'),
                 '  total tests: 20',
                 '   successful: 8',
                 '     failures: 7',
