@@ -15,17 +15,6 @@ def mock_error(string):
     raise ValueError(string)
 
 
-class DummyTerminal(object):
-    """
-    Dummy terminal to replace blessings terminal
-    """
-
-    def __getattr__(self, name):
-        return lambda x: x
-
-
-# blessings might not find a terminal so mock it
-@mock.patch(TESTING_MODULE + '.multinosetests.terminal', lambda: DummyTerminal())
 class TestMultiNoseTests(unittest.TestCase):
     """
     Tests for the main multinosetests function
