@@ -261,7 +261,7 @@ class NosetestsCall(object):
                 packages = []
                 for nose in nose_calls:
                     packages += COVER_PACKAGE_RE.findall(nose.command)[0].split(',')
-                packages = map(lambda i: '{}*'.format(i), list(set(packages)))
+                packages = map(lambda j: '{}*'.format(j), list(set(packages)))
 
                 coverage_command = [
                     'coverage',
