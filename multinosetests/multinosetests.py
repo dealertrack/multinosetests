@@ -184,7 +184,7 @@ class NosetestsCall(object):
         """
         Return unique name for nosetests xml xml report
         """
-        return NOSETESTS_FILE.format(hash(self))
+        return NOSETESTS_FILE.format('.{}'.format(hash(self)))
 
     def get_final_command(self):
         """
@@ -214,7 +214,7 @@ class NosetestsCall(object):
         return hash(self.command)
 
     def __str__(self):
-        return self.command
+        return str(self.command)
 
     def __call__(self):
         """
