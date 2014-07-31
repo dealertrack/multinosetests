@@ -1,7 +1,31 @@
 from __future__ import unicode_literals, print_function
+import argparse
+import six
 import sys
 
-from .multinosetests import NosetestsCall, parser, status_print
+from .multinosetests import NosetestsCall, status_print
+
+
+parser = argparse.ArgumentParser(
+    description='Run nosetests multiple times and merge their '
+                'xml reports using xunitmerge. The advantage '
+                'of this plugin is that it guarantees that all '
+                'nosetests calls are executed even if any of them '
+                'fails. This is especially useful if multiple '
+                'nosetests need to be run in Makefile and fail only '
+                'after all runs are executed and if any of the '
+                'runs failed.'
+)
+
+parser.add_argument(
+    'command',
+    action='store',
+    type=six.text_type,
+    nargs='+',
+    help='Nosetests command string which be executed in shell '
+         '(e.g. `nosetests -sv --with-coverage --with-xunit`). '
+         'Must contain a flag --with-xunit and can be '
+         'provided multiple times.')
 
 
 def main():
