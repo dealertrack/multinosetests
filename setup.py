@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='multinosetests',
-    version='0.1.0',
+    version='0.1.1',
     author='Miroslav Shubernetskiy',
     description='Helper utility to run multiple nosetests suites. '
                 'Useful for makefile scripts.',
