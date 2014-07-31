@@ -12,8 +12,17 @@ COVERAGE_FILE = '.coverage{}'
 NOSETESTS_FILE = 'nosetests{}.xml'
 COVER_PACKAGE_RE = re.compile(r'--cover-package=(?P<packages>[a-z0-9_,]+)', re.IGNORECASE)
 
+_terminal = None
 
-terminal = blessings.Terminal()
+
+def terminal():
+    global _terminal
+
+    if _terminal:
+        return _terminal
+
+    _terminal = blessings.Terminal()
+    return _terminal
 
 
 def status_print(status, message=None):
@@ -37,7 +46,7 @@ def status_print(status, message=None):
         '\n\n'
     ])
     printout = printout.format(
-        status=terminal.bold_green(status),
+        status=terminal().bold_green(status),
         message=': ' + message if message else '',
     )
     print(printout, file=sys.stderr)

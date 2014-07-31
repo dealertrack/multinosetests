@@ -52,6 +52,9 @@ def main():
 
     # merge the test suites and print out the combined
     # coverage report only if none of the test suites failed
-    NosetestsCall.merge_calls(nose_calls, not any_failed)
+    NosetestsCall.merge_calls(
+        nose_calls,
+        report_coverage=not any_failed
+    )
 
     sys.exit(0 if not any_failed else 1)
