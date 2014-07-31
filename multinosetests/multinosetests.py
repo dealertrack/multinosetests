@@ -43,7 +43,7 @@ def status_print(status, message=None):
     print(printout, file=sys.stderr)
 
 
-def get_tests_xml_report(path):
+def get_nose_xml_report(path):
     """
     Get the report from the xml nosetests report
     """
@@ -306,7 +306,7 @@ class NosetestsCall(object):
         for suite in nose_calls:
             status_print_report(
                 'Test suite report',
-                get_tests_xml_report(suite.xunit_file),
+                get_nose_xml_report(suite.xunit_file),
                 suite,
             )
 
@@ -318,5 +318,5 @@ class NosetestsCall(object):
         # print out the overall tests report
         status_print_report(
             'Overall test suite report',
-            get_tests_xml_report(NOSETESTS_FILE.format('')),
+            get_nose_xml_report(NOSETESTS_FILE.format('')),
         )

@@ -3,7 +3,12 @@ import mock
 import sys
 import unittest
 
-from multinosetests import NosetestsCall, status_print
+from multinosetests.multinosetests import (
+    NosetestsCall,
+    get_nose_xml_report,
+    status_print,
+    status_print_report,
+)
 
 
 TESTING_MODULE = 'multinosetests.multinosetests'
@@ -144,7 +149,7 @@ class TestNosetestsCall(unittest.TestCase):
         mock_read_coverage.assert_called_once_with()
 
     @mock.patch(TESTING_MODULE + '.status_print_report')
-    @mock.patch(TESTING_MODULE + '.get_tests_xml_report')
+    @mock.patch(TESTING_MODULE + '.get_nose_xml_report')
     @mock.patch(TESTING_MODULE + '.merge_xunit')
     @mock.patch(TESTING_MODULE + '.call')
     @mock.patch('os.unlink')
@@ -166,6 +171,17 @@ class TestNosetestsCall(unittest.TestCase):
         mock_write_coverage.assert_called_once_with()
         mock_unlink.assert_called_once_with(nose.xunit_file)
         mock_merge_xunit.assert_called_once_with([nose.xunit_file], 'nosetests.xml')
+        mock_get_tests_xml_report.assert_has_call(nose.xunit_file)
+        mock_get_tests_xml_report.assert_has_call('nosetests.xml')
+        mock_status_print_report.assert_has_call(
+            'Test suite report',
+            mock_get_tests_xml_report.return_value,
+            nose
+        )
+        mock_status_print_report.assert_has_call(
+            'Overall test suite report',
+            mock_get_tests_xml_report.return_value,
+        )
 
 
 class TestUtils(unittest.TestCase):
@@ -201,4 +217,85 @@ class TestUtils(unittest.TestCase):
         mock_print.assert_called_once_with(
             '\n---\nfoo\n\n',
             file=sys.stderr
+        )
+
+    @mock.patch(TESTING_MODULE + '.open', create=True)
+    @mock.patch('xunitparser.parse')
+    def test_get_nose_xml_report(self,
+                                  mock_parse,
+                                  mock_open):
+        report = mock.MagicMock()
+        report.errors = [None]*5
+        report.failures = [None]*7
+        report.wasSuccessful.return_value = True
+        report.testsRun = 20
+        mock_parse.return_value = None, report
+
+        actual = get_nose_xml_report('foo')
+
+        mock_open.assert_called_once_with('foo')
+        mock_parse.assert_called_once_with(mock_open.return_value)
+        self.assertDictEqual(
+            actual,
+            {
+                'total': 20,
+                'errors': 5,
+                'failures': 7,
+                'successful': 8,
+                'is_successful': True,
+            }
+        )
+
+    @mock.patch(TESTING_MODULE + '.status_print')
+    def test_status_print_report_with_call(self, mock_status_print):
+        mock_call = mock.MagicMock()
+        mock_call.get_final_command.return_value = 'hello'
+
+        report = {
+            'total': 20,
+            'errors': 5,
+            'failures': 7,
+            'successful': 8,
+            'is_successful': True,
+        }
+
+        status_print_report('Foo', report, mock_call)
+
+        mock_status_print.assert_called_once_with(
+            'Foo',
+            '\n'.join([
+                '',
+                'hello',
+                '',
+                'is successful: True',
+                '  total tests: 20',
+                '   successful: 8',
+                '     failures: 7',
+                '       errors: 5',
+            ])
+        )
+
+    @mock.patch(TESTING_MODULE + '.status_print')
+    def test_status_print_report_without_call(self, mock_status_print):
+        report = {
+            'total': 20,
+            'errors': 5,
+            'failures': 7,
+            'successful': 8,
+            'is_successful': True,
+        }
+
+        status_print_report('Foo', report)
+
+        mock_status_print.assert_called_once_with(
+            'Foo',
+            '\n'.join([
+                '',
+                '',
+                'is successful: True',
+                '  total tests: 20',
+                '   successful: 8',
+                '     failures: 7',
+                '       errors: 5',
+            ])
         )
