@@ -143,6 +143,8 @@ class TestNosetestsCall(unittest.TestCase):
         mock_is_covered.assert_called_once_with()
         mock_read_coverage.assert_called_once_with()
 
+    @mock.patch(TESTING_MODULE + '.status_print_report')
+    @mock.patch(TESTING_MODULE + '.get_tests_xml_report')
     @mock.patch(TESTING_MODULE + '.merge_xunit')
     @mock.patch(TESTING_MODULE + '.call')
     @mock.patch('os.unlink')
@@ -151,7 +153,9 @@ class TestNosetestsCall(unittest.TestCase):
                          mock_write_coverage,
                          mock_unlink,
                          mock_call,
-                         mock_merge_xunit):
+                         mock_merge_xunit,
+                         mock_get_tests_xml_report,
+                         mock_status_print_report):
         cmd = 'nosetests foo --with-xunit --with-coverage --cover-package=bar'
         nose = NosetestsCall(cmd)
 

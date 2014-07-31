@@ -4,6 +4,7 @@ import os
 import re
 import six
 import sys
+import xunitparser
 from subprocess import call
 from xunitmerge import merge_xunit
 
@@ -40,6 +41,40 @@ def status_print(status, message=None):
         message=': ' + message if message else '',
     )
     print(printout, file=sys.stderr)
+
+
+def get_tests_xml_report(path):
+    """
+    Get the report from the xml nosetests report
+    """
+    report = xunitparser.parse(open(path))[1]
+    errors = len(report.errors)
+    failures = len(report.failures)
+    return {
+        'total': report.testsRun,
+        'errors': errors,
+        'failures': failures,
+        'successful': report.testsRun - errors - failures,
+        'is_successful': report.wasSuccessful(),
+    }
+
+
+def status_print_report(name, report, call=None):
+    """
+    Print out the test suite report
+    """
+    command = ''
+    if call:
+        command = call.get_final_command() + '\n'
+    message = (
+        '\n{command}\n'
+        'is successful: {is_successful}\n'
+        '  total tests: {total}\n'
+        '   successful: {successful}\n'
+        '     failures: {failures}\n'
+        '       errors: {errors}'
+    ).format(command=command, **report)
+    status_print(name, message)
 
 
 class NosetestsCall(object):
@@ -106,7 +141,7 @@ class NosetestsCall(object):
 
         Why a unique filename is required, please refer to ``write_coverage()``
         """
-        return COVERAGE_FILE.format('.' + six.text_type(hash(self)))
+        return COVERAGE_FILE.format('.' + six.text_type(abs(hash(self))))
 
     def read_coverage(self):
         """
@@ -168,7 +203,7 @@ class NosetestsCall(object):
         """
         Return unique name for nosetests xml xml report
         """
-        return NOSETESTS_FILE.format('.{}'.format(hash(self)))
+        return NOSETESTS_FILE.format('.{}'.format(abs(hash(self))))
 
     def get_final_command(self):
         """
@@ -240,11 +275,6 @@ class NosetestsCall(object):
         report_report_coverage : bool
             Whether to print out the final combined coverage report
         """
-        # merge all xml reports and remove individual xml reports
-        xunit_files = [i.xunit_file for i in nose_calls]
-        merge_xunit(xunit_files, NOSETESTS_FILE.format(''))
-        map(os.unlink, xunit_files)
-
         # if any of the test suites had coverage
         # coverage data should be combined
         if any((i.is_covered() for i in nose_calls)):
@@ -260,7 +290,9 @@ class NosetestsCall(object):
                 # vs filename patterns ``--include=foo*,bar*``
                 packages = []
                 for nose in nose_calls:
-                    packages += COVER_PACKAGE_RE.findall(nose.command)[0].split(',')
+                    find_packages = COVER_PACKAGE_RE.findall(nose.command)
+                    if find_packages:
+                        packages += find_packages[0].split(',')
                 packages = map(lambda j: '{}*'.format(j), list(set(packages)))
 
                 coverage_command = [
@@ -269,3 +301,22 @@ class NosetestsCall(object):
                     '--include="{}"'.format(','.join(packages)),
                 ]
                 call(' '.join(coverage_command), shell=True)
+
+        # print out the test report for each test suite
+        for suite in nose_calls:
+            status_print_report(
+                'Test suite report',
+                get_tests_xml_report(suite.xunit_file),
+                suite,
+            )
+
+        # merge all xml reports and remove individual xml reports
+        xunit_files = [i.xunit_file for i in nose_calls]
+        merge_xunit(xunit_files, NOSETESTS_FILE.format(''))
+        map(os.unlink, xunit_files)
+
+        # print out the overall tests report
+        status_print_report(
+            'Overall test suite report',
+            get_tests_xml_report(NOSETESTS_FILE.format('')),
+        )
