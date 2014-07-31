@@ -18,10 +18,7 @@ setup(
     url='http://10.134.8.70/E003134/multinosetests',
     packages=find_packages(exclude=['test', 'test.*']),
     scripts=['bin/multinosetests'],
-    install_requires=[
-        'blessings',
-        'six',
-    ],
+    install_requires=read('requirements.txt').splitlines(),
     keywords=' '.join([
         'test',
         'nosetests',
