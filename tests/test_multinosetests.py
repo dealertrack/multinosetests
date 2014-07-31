@@ -1,14 +1,20 @@
 from __future__ import unicode_literals, print_function
 import mock
+import sys
 import unittest
 
-from multinosetests import NosetestsCall
+from multinosetests import NosetestsCall, status_print
 
 
 TESTING_MODULE = 'multinosetests.multinosetests'
 
 
 class TestNosetestsCall(unittest.TestCase):
+    """
+    Tests for NosetestsCall class and its methods
+    which implement most of the multinosetests logic
+    """
+
     def setUp(self):
         super(TestNosetestsCall, self).setUp()
         self.cmd = 'nosetests foo bar rainbows'
@@ -156,3 +162,39 @@ class TestNosetestsCall(unittest.TestCase):
         mock_write_coverage.assert_called_once_with()
         mock_unlink.assert_called_once_with(nose.xunit_file)
         mock_merge_xunit.assert_called_once_with([nose.xunit_file], 'nosetests.xml')
+
+
+class TestUtils(unittest.TestCase):
+    """
+    Tests for utility functions used in multinosetests
+    """
+
+    @mock.patch(TESTING_MODULE + '.print', create=True)
+    @mock.patch(TESTING_MODULE + '.terminal')
+    def test_status_print_with_message(self,
+                                       mock_terminal,
+                                       mock_print):
+        mock_terminal.bold_green.side_effect = lambda x: x
+
+        status_print('foo', 'bar')
+
+        mock_terminal.bold_green.assert_called_once_with('foo')
+        mock_print.assert_called_once_with(
+            '\n---\nfoo: bar\n\n',
+            file=sys.stderr
+        )
+
+    @mock.patch(TESTING_MODULE + '.print', create=True)
+    @mock.patch(TESTING_MODULE + '.terminal')
+    def test_status_print_without_message(self,
+                                          mock_terminal,
+                                          mock_print):
+        mock_terminal.bold_green.side_effect = lambda x: x
+
+        status_print('foo')
+
+        mock_terminal.bold_green.assert_called_once_with('foo')
+        mock_print.assert_called_once_with(
+            '\n---\nfoo\n\n',
+            file=sys.stderr
+        )
