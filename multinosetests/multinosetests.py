@@ -47,7 +47,7 @@ def status_print(status, message=None):
     Parameters
     ----------
     status : str
-        Status text. Is printed bold yellow.
+        Status text. Is printed bold green.
     message : str, optional
         Optional additional message which will be
         printed next to the status without any formatting.
