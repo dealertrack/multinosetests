@@ -15,7 +15,7 @@ setup(
     description='Helper utility to run multiple nosetests suites. '
                 'Useful for makefile scripts.',
     long_description=read('README.rst'),
-    url='http://10.134.8.70/E003134/multinosetests',
+    url='http://10.134.8.70/Dealertrack/multinosetests',
     packages=find_packages(exclude=['test', 'test.*']),
     entry_points={
         'console_scripts': [
