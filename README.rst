@@ -1,3 +1,4 @@
+==============
 MultiNoseTests
 ==============
 
@@ -40,21 +41,3 @@ To run the tests you need to install testing requirements first::
 Then to run tests, you can use ``nosetests``::
 
     $ nosetests -sv
-
-Credits
--------
-
-This utility was created by `Miroslav Shubernetskiy`_ at
-`DealerTrack Technologies`_ (`DealerTrack GitHub`_)
-for our internal use so thank you DealerTrack for allowing to contribute
-the utility to the open-source community.
-
-License
--------
-
-License has not been determined yet for the utility.
-
-
-.. _DealerTrack GitHub: https://github.com/Dealertrack
-.. _DealerTrack Technologies: https://www.dealertrack.com
-.. _Miroslav Shubernetskiy: https://github.com/miki725

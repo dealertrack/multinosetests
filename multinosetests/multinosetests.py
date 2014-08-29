@@ -11,7 +11,8 @@ from xunitmerge import merge_xunit
 
 COVERAGE_FILE = '.coverage{}'
 NOSETESTS_FILE = 'nosetests{}.xml'
-COVER_PACKAGE_RE = re.compile(r'--cover-package=(?P<packages>[a-z0-9_,]+)', re.IGNORECASE)
+COVER_PACKAGE_RE = re.compile(r'--cover-package=(?P<packages>[a-z0-9_,]+)',
+                              re.IGNORECASE)
 
 terminal = blessings.Terminal()
 
@@ -67,7 +68,7 @@ def status_print_report(name, report, call=None):
     if call:
         command = call.get_final_command() + '\n'
 
-    _ = lambda x:x
+    _ = lambda x: x
     c = getattr(terminal, 'green' if report['is_successful'] else 'red')
 
     success = 'SUCCESS' if report['is_successful'] else 'FAILURE'
@@ -321,7 +322,7 @@ class NosetestsCall(object):
         # merge all xml reports and remove individual xml reports
         xunit_files = [i.xunit_file for i in nose_calls]
         merge_xunit(xunit_files, NOSETESTS_FILE.format(''))
-        map(os.unlink, xunit_files)
+        list(map(os.unlink, xunit_files))
 
         # print out the overall tests report
         status_print_report(

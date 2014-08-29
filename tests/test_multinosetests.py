@@ -84,7 +84,7 @@ class TestNosetestsCall(unittest.TestCase):
         cmd = 'nosetests foo bar rainbows'
         nose = NosetestsCall(cmd)
         self.assertEqual(nose.coverage_file,
-                         '.coverage.{}'.format(hash(cmd)))
+                         '.coverage.{}'.format(abs(hash(cmd))))
 
     @mock.patch('os.unlink')
     def test_read_coverage(self, mock_unlink):
@@ -112,7 +112,7 @@ class TestNosetestsCall(unittest.TestCase):
     def test_xunit_file(self):
         nose = NosetestsCall(self.cmd)
         self.assertEqual(nose.xunit_file,
-                         'nosetests.{}.xml'.format(hash(self.cmd)))
+                         'nosetests.{}.xml'.format(abs(hash(self.cmd))))
 
     def test_get_final_command(self):
         nose = NosetestsCall(self.cmd)
@@ -168,10 +168,12 @@ class TestNosetestsCall(unittest.TestCase):
         NosetestsCall.merge_calls([nose], True)
 
         mock_call.assert_any_call('coverage combine', shell=True)
-        mock_call.assert_any_call('coverage report --include="bar*"', shell=True)
+        mock_call.assert_any_call('coverage report --include="bar*"',
+                                  shell=True)
         mock_write_coverage.assert_called_once_with()
         mock_unlink.assert_called_once_with(nose.xunit_file)
-        mock_merge_xunit.assert_called_once_with([nose.xunit_file], 'nosetests.xml')
+        mock_merge_xunit.assert_called_once_with([nose.xunit_file],
+                                                 'nosetests.xml')
         mock_get_tests_xml_report.assert_has_call(nose.xunit_file)
         mock_get_tests_xml_report.assert_has_call('nosetests.xml')
         mock_status_print_report.assert_has_call(
@@ -223,11 +225,11 @@ class TestUtils(unittest.TestCase):
     @mock.patch(TESTING_MODULE + '.open', create=True)
     @mock.patch('xunitparser.parse')
     def test_get_nose_xml_report(self,
-                                  mock_parse,
-                                  mock_open):
+                                 mock_parse,
+                                 mock_open):
         report = mock.MagicMock()
-        report.errors = [None]*5
-        report.failures = [None]*7
+        report.errors = [None] * 5
+        report.failures = [None] * 7
         report.wasSuccessful.return_value = True
         report.testsRun = 20
         mock_parse.return_value = None, report

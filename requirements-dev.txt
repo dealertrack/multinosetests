@@ -1,2 +1,7 @@
-nose
+-r requirements.txt
+coverage
+flake8
 mock
+nose
+rednose
+tox

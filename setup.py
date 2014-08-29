@@ -8,13 +8,24 @@ def read(fname):
         .read().decode('utf-8')
 
 
+authors = read('AUTHORS.rst')
+history = read('HISTORY.rst').replace('.. :changelog:', '')
+licence = read('LICENSE.rst')
+readme = read('README.rst')
+
+requirements = read('requirements.txt').splitlines() + [
+    'setuptools',
+]
+
+test_requirements = read('requirements-dev.txt').splitlines()
+
 setup(
     name='multinosetests',
-    version='0.2',
+    version='0.2.1',
     author='Miroslav Shubernetskiy',
     description='Helper utility to run multiple nosetests suites. '
                 'Useful for makefile scripts.',
-    long_description=read('README.rst'),
+    long_description='\n\n'.join([readme, history, authors, licence]),
     url='http://10.134.8.70/Dealertrack/multinosetests',
     packages=find_packages(exclude=['test', 'test.*']),
     entry_points={
@@ -22,9 +33,9 @@ setup(
             'multinosetests = multinosetests:main',
         ]
     },
-    install_requires=read('requirements.txt').splitlines() + [
-        'setuptools',
-    ],
+    install_requires=requirements,
+    test_suite='tests',
+    tests_require=test_requirements,
     keywords=' '.join([
         'test',
         'nosetests',
