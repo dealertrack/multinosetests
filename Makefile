@@ -23,18 +23,18 @@ install:
 	pip install -U -r requirements-dev.txt
 
 clean: clean-build clean-pyc
-	-rm -rf htmlcov/
-	-rm -rf .coverage coverage*
+	@-rm -rf htmlcov/
+	@-rm -rf .coverage coverage*
 
 clean-build:
-	rm -rf build/
-	rm -rf dist/
-	rm -rf *.egg-info
+	@rm -rf build/
+	@rm -rf dist/
+	@rm -rf *.egg-info
 
 clean-pyc:
-	find . -name '*.pyc' -follow -print0 | xargs -0 rm -f
-	find . -name '*.pyo' -follow -print0 | xargs -0 rm -f
-	find . -name '__pycache__' -type d -follow -print0 | xargs -0 rm -rf
+	@find . -name '*.pyc' -follow -print0 | xargs -0 rm -f
+	@find . -name '*.pyo' -follow -print0 | xargs -0 rm -f
+	@find . -name '__pycache__' -type d -follow -print0 | xargs -0 rm -rf
 
 lint:
 	flake8 multinosetests tests
