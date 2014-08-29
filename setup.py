@@ -17,7 +17,10 @@ requirements = read('requirements.txt').splitlines() + [
     'setuptools',
 ]
 
-test_requirements = read('requirements-dev.txt').splitlines()
+test_requirements = (
+    read('requirements.txt').splitlines()
+    + read('requirements-dev.txt').splitlines()[1:]
+)
 
 setup(
     name='multinosetests',
