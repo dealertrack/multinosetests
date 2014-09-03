@@ -29,7 +29,7 @@ setup(
     description='Helper utility to run multiple nosetests suites. '
                 'Useful for makefile scripts.',
     long_description='\n\n'.join([readme, history, authors, licence]),
-    url='http://10.134.8.70/Dealertrack/multinosetests',
+    url='https://github.com/Dealertrack/multinosetests',
     packages=find_packages(exclude=['test', 'test.*']),
     entry_points={
         'console_scripts': [

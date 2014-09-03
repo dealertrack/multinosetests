@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at http://10.134.8.70/Dealertrack/multinosetests/issues.
+Report bugs at https://github.com/Dealertrack/multinosetests/issues.
 
 If you are reporting a bug, please include:
 
@@ -44,7 +44,7 @@ Submit Feedback
 ~~~~~~~~~~~~~~~
 
 The best way to send feedback is to file an issue at
-http://10.134.8.70/Dealertrack/multinosetests/issues.
+https://github.com/Dealertrack/multinosetests/issues.
 
 If you are proposing a feature:
 
