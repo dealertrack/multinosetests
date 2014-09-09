@@ -8,6 +8,9 @@ MultiNoseTests
 .. image:: https://travis-ci.org/dealertrack/multinosetests.png?branch=master
     :target: https://travis-ci.org/dealertrack/multinosetests
 
+.. image:: https://coveralls.io/repos/dealertrack/multinosetests/badge.png?branch=master
+    :target: https://coveralls.io/r/dealertrack/multinosetests?branch=master
+
 Helper utility to run multiple nosetests suites.
 Mostly used for making makefile scripts.
 
