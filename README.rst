@@ -2,6 +2,12 @@
 MultiNoseTests
 ==============
 
+.. image:: https://badge.fury.io/py/multinosetests.png
+    :target: http://badge.fury.io/py/multinosetests
+
+.. image:: https://travis-ci.org/dealertrack/multinosetests.png?branch=master
+    :target: https://travis-ci.org/dealertrack/multinosetests
+
 Helper utility to run multiple nosetests suites.
 Mostly used for making makefile scripts.
 
