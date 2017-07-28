@@ -179,15 +179,13 @@ class TestNosetestsCall(unittest.TestCase):
             mock.call(nose.xunit_file),
             mock.call('nosetests.xml'),
         ])
-        mock_status_print_report.assert_has_call(
-            'Test suite report',
-            mock_get_tests_xml_report.return_value,
-            nose
-        )
-        mock_status_print_report.assert_has_call(
-            'Overall test suite report',
-            mock_get_tests_xml_report.return_value,
-        )
+        mock_status_print_report.assert_has_calls([
+            mock.call('Test suite report',
+                      mock_get_tests_xml_report.return_value,
+                      nose),
+            mock.call('Overall test suite report',
+                      mock_get_tests_xml_report.return_value,)
+        ])
 
 
 class TestUtils(unittest.TestCase):
