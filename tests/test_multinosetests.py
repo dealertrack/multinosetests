@@ -175,8 +175,10 @@ class TestNosetestsCall(unittest.TestCase):
         mock_unlink.assert_called_once_with(nose.xunit_file)
         mock_merge_xunit.assert_called_once_with([nose.xunit_file],
                                                  'nosetests.xml')
-        mock_get_tests_xml_report.assert_has_call(nose.xunit_file)
-        mock_get_tests_xml_report.assert_has_call('nosetests.xml')
+        mock_get_tests_xml_report.assert_has_calls([
+            nose.xunit_file,
+            'nosetests.xml'
+        ])
         mock_status_print_report.assert_has_call(
             'Test suite report',
             mock_get_tests_xml_report.return_value,
