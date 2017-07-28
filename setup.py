@@ -1,11 +1,12 @@
-from __future__ import unicode_literals, print_function
+from __future__ import print_function, unicode_literals
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname), 'rb') \
-        .read().decode('utf-8')
+    with open(os.path.abspath(os.path.join(__file__, os.pardir, fname)), 'rb') as fid:
+        return fid.read().decode('utf-8')
 
 
 authors = read('AUTHORS.rst')
@@ -18,19 +19,19 @@ requirements = read('requirements.txt').splitlines() + [
 ]
 
 test_requirements = (
-    read('requirements.txt').splitlines()
-    + read('requirements-dev.txt').splitlines()[1:]
+    read('requirements.txt').splitlines() +
+    read('requirements-dev.txt').splitlines()[1:]
 )
 
 setup(
     name='multinosetests',
-    version='0.2.1',
+    version='0.2.2',
     author='Miroslav Shubernetskiy',
     description='Helper utility to run multiple nosetests suites. '
                 'Useful for makefile scripts.',
     long_description='\n\n'.join([readme, history, authors, licence]),
     url='https://github.com/Dealertrack/multinosetests',
-    packages=find_packages(exclude=['test', 'test.*']),
+    packages=find_packages(exclude=['tests', 'tests.*']),
     entry_points={
         'console_scripts': [
             'multinosetests = multinosetests:main',

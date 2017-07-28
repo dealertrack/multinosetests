@@ -1,11 +1,12 @@
-from __future__ import unicode_literals, print_function
-import blessings
+from __future__ import print_function, unicode_literals
 import os
 import re
-import six
 import sys
-import xunitparser
 from subprocess import call
+
+import blessings
+import six
+import xunitparser
 from xunitmerge import merge_xunit
 
 
@@ -68,7 +69,7 @@ def status_print_report(name, report, call=None):
     if call:
         command = call.get_final_command() + '\n'
 
-    _ = lambda x: x
+    _ = lambda x: x  # noqa
     c = getattr(terminal, 'green' if report['is_successful'] else 'red')
 
     success = 'SUCCESS' if report['is_successful'] else 'FAILURE'

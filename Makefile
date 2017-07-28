@@ -38,6 +38,7 @@ clean-pyc:
 
 lint:
 	flake8 multinosetests tests
+	importanize --ci
 
 test:
 	nosetests ${NOSE_FLAGS} tests/
@@ -50,9 +51,11 @@ test-all:
 
 release: clean
 	python setup.py sdist upload
+	python setup.py bdist_wheel upload
 
 dist: clean
 	python setup.py sdist
+	python setup.py bdist_wheel
 	ls -l dist
 
 check: clean lint test-coverage

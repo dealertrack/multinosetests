@@ -3,6 +3,12 @@
 History
 -------
 
+0.2.2 (2017-07-28)
+~~~~~~~~~~~~~~~~~~
+
+* Using wheels for distribution
+* Excluding tests from being installed
+
 0.2.1 (2014-08-28)
 ~~~~~~~~~~~~~~~~~~
 

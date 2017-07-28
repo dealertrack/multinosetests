@@ -1,6 +1,7 @@
-from __future__ import unicode_literals, print_function
-import mock
+from __future__ import print_function, unicode_literals
 import unittest
+
+import mock
 
 from multinosetests import main
 
